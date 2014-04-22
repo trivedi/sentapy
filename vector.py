@@ -12,6 +12,7 @@ class Vector(dict):
         Uses dictionary constructor
         """
         dict.__init__(self, *args, **kwargs)
+        self.default = 0
 
 
 
@@ -29,7 +30,7 @@ class Vector(dict):
         if key in self:
             return dict.__getitem__(self, key)
         else:
-            return 0
+            return self.default
 
 
     def __repr__(self):
