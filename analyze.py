@@ -47,8 +47,8 @@ def sanitize(text, stopwords):
 
     slang = {
             "lol":"laughing out loud",
-             "lmao":"laughing my ass off",
-             "rofl":"rolling on the floor laughing",
+             "lmao":"laughing",
+             "rofl":"laughing",
              "omg":"oh my god",
              "idk":"i don't know",
             }
@@ -154,8 +154,7 @@ def features():
             print "entropy(%s, positive) = %s" % (word[0], word[1])
         else:
             print "entropy(%s, negative) = %s" % (word[0], word[1])
-
-
+        
 
 
 
