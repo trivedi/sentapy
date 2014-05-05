@@ -1,4 +1,4 @@
-import math, nltk, re, sys
+import math, re
 from vector import Vector
 
 def generate_stopwords():
@@ -38,7 +38,6 @@ def sanitize(text, stopwords):
     #words = [word for word in words if "#" not in word] # remove #hashtags
     words = [word.replace('#', '') for word in words]
     words = [word for word in words if not word.startswith("http")] # remove URLs
-    words = [word for word in words if word not in stopwords] # remove stopwords
 
 
     # Experimental
@@ -73,6 +72,9 @@ def sanitize(text, stopwords):
     words = re.findall("\w+", text)
     words.extend(re.findall("['\-/()=:;]['\-/()=:;]+", text))
     words = {word for word in words if len(word) > 1 and word.lower() != "rt"}
+
+    words = {word for word in words if word not in stopwords} # remove stopwords
+
 
     return words
 
