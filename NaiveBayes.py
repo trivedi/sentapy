@@ -1,3 +1,4 @@
+from __future__ import print_function
 import math, nltk
 
 from termcolor import colored
@@ -130,15 +131,26 @@ class NaiveBayesClassifier():
         sanitized = sanitize(tweet, self.stopwords)
        # print sanitized
         sentiment = {}
-        for s in self.classes:
-            sentiment[s] = self.posterior(s, sanitized) # Calculate posterior for positive and negative sentiment
-        
+       
         bigrams = nltk.bigrams(sanitized)
-        for s in self.classes:
-            for pair in bigrams:
-             #   sentiment[s] += self.posterior(s, pair)
-             #   if verbose: print (s, pair, self.posterior(s, pair))
-             pass
+        trigrams = nltk.trigrams(sanitized)
+        
+        if len(sanitized) <= 22:
+            for s in self.classes:
+                sentiment[s] = self.posterior(s, sanitized) # Calculate posterior for positive and negative sentiment
+                if verbose: print(s, sanitized, self.posterior(s, sanitized))
+        elif len(sanitized) == 23:
+            for s in self.classes:
+                for pair in bigrams:
+                   sentiment[s] = self.posterior(s, pair)
+                   if verbose: print (s, pair, self.posterior(s, pair))
+        else:
+            # use trigram model
+            for s in self.classes:
+                for tri in trigrams:
+                    sentiment[s] = self.posterior(s, tri)
+                    if verbose: print (s, tri, self.posterior(s, tri))    
+
 
         
 
@@ -160,16 +172,16 @@ class NaiveBayesClassifier():
             elif negative > positive:
                 positive = abs(positive)
 
-        if verbose: print "positive: %f negative: %f" % (positive, negative)
+        if verbose: print("positive: %f negative: %f" % (positive, negative))
         if positive > + math.log(2) + negative:
             if eval: return "+"
-            else: print colored('+', 'green')
+            else: print(colored('+', 'green'))
         elif negative > math.log(1)+positive:
             if eval: return "-"
-            else: print colored('-', 'red')
+            else: print(colored('-', 'red'))
         else:
             if eval: return "~"
-            else: print colored('~', 'white')
+            else: print(colored('~', 'white'))
 
     def evaluate(self):
         t = w = 0 # total = 0, wrong = 0
@@ -179,24 +191,23 @@ class NaiveBayesClassifier():
             if "+" != self.classify(tweet, False, eval=True):
                 missed_pos += [(tweet.strip(), self.classify(tweet))]
                 w += 1.0
-        print "Positive - accuracy: %s" % self.accuracy(w, t) # make function that displays values correctly
-        #print "Missed positives:"
-      #  for tweet in missed_pos:
-       #     print tweet
+        print(colored('Positive', 'green'), end="")
+        print(" - accuracy: %s" % self.accuracy(w, t)) # make function that displays values correctly
         
         t = w = 0
         for tweet in open("data/verify_neg.txt"):
             t += 1.0
             if "-" != self.classify(tweet, False, eval=True):
                 w += 1.0
-        print "Negative - accuracy: %s" % self.accuracy(w, t)
+        print(colored('Negative', 'red'), end="") 
+        print(" - accuracy: %s" % self.accuracy(w, t))
 
         w = t = 0
         for tweet in open("data/verify_neutral.txt"):
             t += 1.0
             if "~" != self.classify(tweet, verbose=False, eval=True):
                 w += 1.0
-        print "Neutral - accuracy: %s" % self.accuracy(w, t)
+       # print "Neutral - accuracy: %s" % self.accuracy(w, t)
 
 
 
@@ -209,7 +220,4 @@ class NaiveBayesClassifier():
         pass
 
 
-
-
 c = NaiveBayesClassifier()
-c.evaluate()
