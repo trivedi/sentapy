@@ -35,7 +35,8 @@ def sanitize(text, stopwords):
     words = text.split()
     words = [word for word in words if "@" not in word] # remove @usernames
     words = [word for word in words if "rt" not in word] # remove retweets
-    words = [word for word in words if "#" not in word] # remove #hashtags
+    #words = [word for word in words if "#" not in word] # remove #hashtags
+    words = [word.replace('#', '') for word in words]
     words = [word for word in words if not word.startswith("http")] # remove URLs
     words = [word for word in words if word not in stopwords] # remove stopwords
 
@@ -51,6 +52,8 @@ def sanitize(text, stopwords):
              "rofl":"laughing",
              "omg":"oh my god",
              "idk":"i don't know",
+             "fav":"favorite",
+             "fave":"favorite"
             }
 
     # replace abbreviations with their actual meaning
@@ -146,19 +149,9 @@ def features():
 
         features.append( (word, h) )
 
-
-    #sorted_features = sorted(features, key=lambda x : x[1])
-
     for word in [word for word in sorted(features, key=lambda x: -x[1])[:100]]:
         if word[0] in positives:
             print "entropy(%s, positive) = %s" % (word[0], word[1])
         else:
             print "entropy(%s, negative) = %s" % (word[0], word[1])
         
-
-
-
-
-# Tests
-print sanitize("RT @nishadtrivedi omg I didn't know i had 2 weeks to complete this project! lmao", generate_stopwords())
-#assert sanitize("RT @nishadtrivedi I have 2 weeks to complete this project! lmao", generate_stopwords()) == {"weeks", "complete", "project"}
