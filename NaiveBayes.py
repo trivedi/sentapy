@@ -23,7 +23,7 @@ class NaiveBayesClassifier():
         self.stopwords = generate_stopwords()
 
         self.features = set()
-        f = open("data/features_new.txt", "r")
+        f = open("data/features.txt", "r")
         for line in f:
             self.features.add(line.strip().lower())
         f.close()
@@ -158,25 +158,19 @@ class NaiveBayesClassifier():
         negative = sentiment["-"] # Get calculated posterior fo negative sentiment
 
         #print "positive: %s negative: %s" % (positive, negative)
-        '''
-        if abs(positive - negative) < 1:
-            return "~"
-        elif positive > negative:
-            return "+"
-        else:
-            return "-"
-        '''
-        if "not" in sanitized:
-            if positive > negative:
+
+        if "not" in sanitized or "despite" in sanitized:
+            if positive > + math.log(1.3) + negative:
                 negative = abs(negative)
-            elif negative > positive:
+            elif negative > math.log(9) + positive:
                 positive = abs(positive)
 
         if verbose: print("positive: %f negative: %f" % (positive, negative))
-        if positive > + math.log(2) + negative:
+      
+        if positive > + math.log(1.3) + negative:
             if eval: return "+"
             else: print(colored('+', 'green'))
-        elif negative > math.log(1)+positive:
+        elif negative > math.log(.9)+positive:
             if eval: return "-"
             else: print(colored('-', 'red'))
         else:
@@ -191,24 +185,24 @@ class NaiveBayesClassifier():
             t += 1.0
             totalp += 1.0
             e = self.classify(tweet, False, eval=True)
-            if "+" != e:
+            if e != "+":
                 if e == "-": fn += 1
                 w += 1.0
         tp = t - w # true positive
         print(colored('Positive', 'green'), end="")
-        print(" - accuracy: %f" % self.accuracy(w, t)) # make function that displays values correctly
+        print(" - accuracy: %.2f%%" % self.accuracy(w, t)) # make function that displays values correctly
         
         t = w = 0
         for tweet in open("data/verify_neg.txt"):
             t += 1.0
             totaln += 1.0
             e = self.classify(tweet, False, eval=True)
-            if "-" != e:
+            if e != "-":
                 if e == "+": fp += 1
                 w += 1.0
         tn = t - w # true negative
         print(colored('Negative', 'red'), end="") 
-        print(" - accuracy: %f" % self.accuracy(w, t))
+        print(" - accuracy: %.2f%%" % self.accuracy(w, t))
 
         w = t = 0
         for tweet in open("data/verify_neutral.txt"):
@@ -220,22 +214,22 @@ class NaiveBayesClassifier():
 
         # Precision
         # = TP / (TP + FP)
-        precision = (tp / (tp + fp)) * 100
-        print(colored("\nPrecision: ", "magenta") + "%f" % round(precision, 2))
+        precision = (tp / (tp + fp))
+        print(colored("\nPrecision: ", "magenta") + "%.2f" % precision)
         # Recall
         # = TP / (TP + FN)
-        recall = (tp / (tp + fn)) * 100
-        print(colored("Recall: ", "magenta") + "%f" % round(recall, 2))
+        recall = (tp / (tp + fn))
+        print(colored("Recall: ", "magenta") + "%.2f" % recall)
 
         # Accuracy
         # = (TP + TN) / (P + N)
-        accuracy = ( (tp + tn) / (totalp + totaln) ) * 100
-        print(colored("Accuracy: ", "magenta") + "%f" % round(accuracy, 2))
+        accuracy = (tp + tn) / (totalp + totaln) * 100
+        print(colored("Accuracy: ", "magenta") + "%.2f%%" % accuracy)
 
         # F-score
         # measure of test's accuracy - considers both the precision and recall
         f_score = 2 * (precision*recall) / (precision+recall)
-        print(colored("\nF-Measure: ", "cyan") + "%f" % round(f_score, 2))
+        print(colored("\nF-Measure: ", "cyan") + "%.2f" % f_score)
 
 
     def accuracy(self, w, t):
