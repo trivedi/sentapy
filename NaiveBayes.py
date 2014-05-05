@@ -184,23 +184,31 @@ class NaiveBayesClassifier():
             else: print(colored('~', 'white'))
 
     def evaluate(self):
+        totalp = totaln = 0
         t = w = 0 # total = 0, wrong = 0
-        missed_pos = []
+        fp = fn = 0 # false positive = 0, false negative = 0
         for tweet in open("data/verify_pos.txt"):
             t += 1.0
-            if "+" != self.classify(tweet, False, eval=True):
-                missed_pos += [(tweet.strip(), self.classify(tweet))]
+            totalp += 1.0
+            e = self.classify(tweet, False, eval=True)
+            if "+" != e:
+                if e == "-": fn += 1
                 w += 1.0
+        tp = t - w # true positive
         print(colored('Positive', 'green'), end="")
-        print(" - accuracy: %s" % self.accuracy(w, t)) # make function that displays values correctly
+        print(" - accuracy: %f" % self.accuracy(w, t)) # make function that displays values correctly
         
         t = w = 0
         for tweet in open("data/verify_neg.txt"):
             t += 1.0
-            if "-" != self.classify(tweet, False, eval=True):
+            totaln += 1.0
+            e = self.classify(tweet, False, eval=True)
+            if "-" != e:
+                if e == "+": fp += 1
                 w += 1.0
+        tn = t - w # true negative
         print(colored('Negative', 'red'), end="") 
-        print(" - accuracy: %s" % self.accuracy(w, t))
+        print(" - accuracy: %f" % self.accuracy(w, t))
 
         w = t = 0
         for tweet in open("data/verify_neutral.txt"):
@@ -210,10 +218,28 @@ class NaiveBayesClassifier():
        # print "Neutral - accuracy: %s" % self.accuracy(w, t)
 
 
+        # Precision
+        # = TP / (TP + FP)
+        precision = (tp / (tp + fp)) * 100
+        print(colored("\nPrecision: ", "magenta") + "%f" % round(precision, 2))
+        # Recall
+        # = TP / (TP + FN)
+        recall = (tp / (tp + fn)) * 100
+        print(colored("Recall: ", "magenta") + "%f" % round(recall, 2))
+
+        # Accuracy
+        # = (TP + TN) / (P + N)
+        accuracy = ( (tp + tn) / (totalp + totaln) ) * 100
+        print(colored("Accuracy: ", "magenta") + "%f" % round(accuracy, 2))
+
+        # F-score
+        # measure of test's accuracy - considers both the precision and recall
+        f_score = 2 * (precision*recall) / (precision+recall)
+        print(colored("\nF-Measure: ", "cyan") + "%f" % round(f_score, 2))
 
 
     def accuracy(self, w, t):
-        return str( (1 - (w/t)) * 100 )
+        return (1 - (w/t)) * 100
 
 
     def __repr__(self):
