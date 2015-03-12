@@ -1,13 +1,14 @@
 #!/usr/bin/python/
 from __future__ import print_function
 
+import credentials
 import tweepy, time
 import NaiveBayes
 
-ACCESS_KEY = '361596509-0182QQDamwiRcPHYWICdsg7mIMWxS1h8sP2Umkcb'
-ACCESS_SECRET = 'eVatVboU1WowO4odY3nahOXpLYrbvB4Hr4pKSzVqlX2oC'
-CONSUMER_KEY = 'hQwtjtpcj4mWRLvPtJ88g'
-CONSUMER_SECRET = 'Kq5C2EvtyhKHrnzVo1OW63LGIvPzSkRjsEEGb3mIbig'
+ACCESS_KEY = credentials.ACCESS_KEY
+ACCESS_SECRET = credentials.ACCESS_SECRET
+CONSUMER_KEY = credentials.CONSUMER_KEY
+CONSUMER_SECRET = credentials.CONSUMER_SECRET
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
